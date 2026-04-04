@@ -1,0 +1,89 @@
+{
+  "transactions": [
+    {
+      "id": "1",
+      "date": "2026-04-01",
+      "category": "Food",
+      "type": "Expense",
+      "amount": "500"
+    },
+    {
+      "id": "2",
+      "date": "2026-04-02",
+      "category": "Salary",
+      "type": "Income",
+      "amount": "15000"
+    },
+    {
+      "id": "3",
+      "date": "2026-04-03",
+      "category": "Transport",
+      "type": "Expense",
+      "amount": "200"
+    },
+    {
+      "id": "4",
+      "date": "2026-04-04",
+      "category": "Shopping",
+      "type": "Expense",
+      "amount": "1200"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "DGwgEoW5UVY"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "8X2uqFx8tdM"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "KUfMYrdzShQ"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "XOVBjtzyHgs"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "9CglPa7XP3E"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "hPjgm5CIEns"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "CvTixZMkMyE"
+    },
+    {
+      "date": "2026-04-05",
+      "category": "Bills",
+      "type": "Expense",
+      "amount": "₹800",
+      "id": "Le61MHm7H1s"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
