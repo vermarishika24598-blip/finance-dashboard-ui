@@ -19,7 +19,7 @@ function Dashboard() {
     addTransaction,
   } = useFinance();
 
-  // 🔐 ROLE (change here)
+  // 🔐 ROLE SWITCH
   const [role, setRole] = useState("Admin");
 
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +64,7 @@ function Dashboard() {
       if (sortBy === "High") return getAmount(b.amount) - getAmount(a.amount);
       if (sortBy === "Low") return getAmount(a.amount) - getAmount(b.amount);
       if (sortBy === "Oldest") return new Date(a.date) - new Date(b.date);
-      return new Date(b.date) - new Date(a.date); // ✅ FIX
+      return new Date(b.date) - new Date(a.date);
     });
 
   // 💰 CALCULATIONS
@@ -96,28 +96,32 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-100 via-blue-50 to-purple-100">
 
-      {/* 🔐 ROLE SWITCH (ADD HERE 👇) */}
-    <div className="mb-4 flex gap-4 items-center">
+      {/* 🔐 HEADER */}
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-700">
+          Finance Dashboard
+        </h1>
 
-      <span className="px-3 py-1 bg-black text-white rounded">
-        Role: {role}
-      </span>
+        <div className="flex gap-3 items-center">
+          <span className="px-4 py-1 bg-black text-white rounded-full text-sm">
+            {role}
+          </span>
 
-      <button
-        onClick={() =>
-          setRole(role === "Admin" ? "Viewer" : "Admin")
-        }
-        className="bg-purple-500 text-white px-4 py-1 rounded"
-      >
-        Switch to {role === "Admin" ? "Viewer" : "Admin"}
-      </button>
-
-    </div>
+          <button
+            onClick={() =>
+              setRole(role === "Admin" ? "Viewer" : "Admin")
+            }
+            className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 py-1 rounded-full shadow hover:scale-105 transition"
+          >
+            Switch
+          </button>
+        </div>
+      </div>
 
       {/* 🔍 FILTERS */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6 flex flex-wrap gap-4">
+      <div className="backdrop-blur-lg bg-white/60 p-4 rounded-xl shadow-lg mb-6 flex flex-wrap gap-4 border border-white/40">
 
         <input
           type="text"
@@ -174,35 +178,34 @@ function Dashboard() {
       {/* 💰 CARDS */}
       <div className="grid grid-cols-3 gap-6 mb-6">
 
-        <div className="bg-gradient-to-r from-green-400 to-green-600 text-white p-5 rounded-xl shadow">
-          <h2>Total Income</h2>
-          <p className="text-2xl font-bold">₹{totalIncome}</p>
+        <div className="bg-gradient-to-r from-green-400 to-emerald-500 text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition">
+          <p className="text-sm opacity-80">Total Income</p>
+          <h2 className="text-3xl font-bold">₹{totalIncome}</h2>
         </div>
 
-        <div className="bg-gradient-to-r from-red-400 to-red-600 text-white p-5 rounded-xl shadow">
-          <h2>Total Expense</h2>
-          <p className="text-2xl font-bold">₹{totalExpense}</p>
+        <div className="bg-gradient-to-r from-red-400 to-pink-500 text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition">
+          <p className="text-sm opacity-80">Total Expense</p>
+          <h2 className="text-3xl font-bold">₹{totalExpense}</h2>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-5 rounded-xl shadow">
-          <h2>Balance</h2>
-          <p className="text-2xl font-bold">₹{balance}</p>
+        <div className="bg-gradient-to-r from-blue-400 to-indigo-500 text-white p-6 rounded-2xl shadow-lg hover:scale-105 transition">
+          <p className="text-sm opacity-80">Balance</p>
+          <h2 className="text-3xl font-bold">₹{balance}</h2>
         </div>
 
       </div>
 
-      {/* ➕ ADMIN ONLY BUTTONS */}
+      {/* ➕ BUTTONS */}
       {role === "Admin" && (
         <div className="mb-6 flex gap-4">
-
           <button
             onClick={() => {
               setType("Income");
               setShowModal(true);
             }}
-            className="bg-green-500 text-white px-5 py-2 rounded-lg shadow"
+            className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition"
           >
-            + Add Income
+            + Income
           </button>
 
           <button
@@ -210,42 +213,41 @@ function Dashboard() {
               setType("Expense");
               setShowModal(true);
             }}
-            className="bg-red-500 text-white px-5 py-2 rounded-lg shadow"
+            className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition"
           >
-            + Add Expense
+            + Expense
           </button>
-
         </div>
       )}
 
       {/* 📊 CHARTS */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <LineChart transactions={filteredTransactions} />
-        <PieChart transactions={filteredTransactions} />
+      <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="bg-white/70 backdrop-blur-lg p-4 rounded-2xl shadow">
+          <LineChart transactions={filteredTransactions} />
+        </div>
+        <div className="bg-white/70 backdrop-blur-lg p-4 rounded-2xl shadow">
+          <PieChart transactions={filteredTransactions} />
+        </div>
       </div>
 
       {/* 📋 TABLE */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white/70 backdrop-blur-lg rounded-2xl shadow overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-200">
             <tr>
-              <th className="p-3">Date</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Type</th>
-              <th className="p-3">Amount</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Category</th>
+              <th className="p-4">Type</th>
+              <th className="p-4">Amount</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredTransactions.map((t) => (
-              <tr key={t.id} className="text-center border-t hover:bg-gray-50">
+              <tr key={t.id} className="text-center border-t hover:bg-gray-100 transition">
                 <td className="p-3">{t.date}</td>
                 <td className="p-3">{t.category}</td>
-                <td
-                  className={`p-3 font-semibold ${
-                    t.type === "Income" ? "text-green-600" : "text-red-600"
-                  }`}
-                >
+                <td className={`p-3 font-semibold ${t.type === "Income" ? "text-green-600" : "text-red-600"}`}>
                   {t.type}
                 </td>
                 <td className="p-3">{t.amount}</td>
@@ -255,10 +257,10 @@ function Dashboard() {
         </table>
       </div>
 
-      {/* 🔥 MODAL (ADMIN ONLY SAFE) */}
+      {/* 🔥 MODAL */}
       {showModal && role === "Admin" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl w-80 shadow">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center">
+          <div className="bg-white p-6 rounded-2xl w-80 shadow-2xl">
 
             <h2 className="mb-4 text-lg font-bold text-center">
               Add {type}
