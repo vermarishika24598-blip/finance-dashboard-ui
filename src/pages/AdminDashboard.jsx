@@ -1,100 +1,194 @@
-import React from "react";
+import React, { useState } from "react";
 import { useFinance } from "../context/FinanceContext";
 
 function AdminDashboard() {
-  const { transactions } = useFinance();
+  const { transactions, setTransactions } = useFinance();
+
+  const [editingTxn, setEditingTxn] = useState(null);
 
   // 💰 calculations
-  const totalUsers = new Set(transactions.map((t) => t.user || "User")).size;
-
   const totalTransactions = transactions.length;
 
   const totalRevenue = transactions
     .filter((t) => t.type === "Income")
-    .reduce((sum, t) => {
-      return sum + parseInt(t.amount.replace("₹", ""));
-    }, 0);
+    .reduce((sum, t) => sum + parseInt(t.amount.replace("₹", "")), 0);
 
-  // 🧾 recent activity (latest 5)
+  const totalExpense = transactions
+    .filter((t) => t.type === "Expense")
+    .reduce((sum, t) => sum + parseInt(t.amount.replace("₹", "")), 0);
+
+  // 📊 Top category
+  const categoryMap = {};
+  transactions.forEach((t) => {
+    if (!categoryMap[t.category]) categoryMap[t.category] = 0;
+    categoryMap[t.category] += parseInt(t.amount.replace("₹", ""));
+  });
+
+  const topCategory =
+    Object.entries(categoryMap).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A";
+
+  // 🧾 Recent
   const recent = [...transactions]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5);
+    .slice(0, 6);
+
+  // 🗑️ DELETE
+  const handleDelete = (id) => {
+    const updated = transactions.filter((t) => t.id !== id);
+    setTransactions(updated);
+  };
+
+  // ✏️ EDIT SAVE
+  const handleSave = () => {
+    const updated = transactions.map((t) =>
+      t.id === editingTxn.id ? editingTxn : t
+    );
+    setTransactions(updated);
+    setEditingTxn(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] text-white p-6">
 
-      {/* 🔥 Header */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard ⚡</h1>
+      {/* 🔥 HEADER */}
+      <h1 className="text-3xl font-bold mb-8">Admin Dashboard ⚡</h1>
 
-        <button className="bg-indigo-500 px-4 py-2 rounded-lg hover:bg-indigo-600">
-          + Add New
-        </button>
-      </div>
+      {/* 📊 CARDS */}
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
 
-      {/* 📊 Stats Cards */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-
-        <div className="p-5 rounded-xl bg-white/10 backdrop-blur border border-white/20 hover:scale-105 transition">
-          <p className="text-gray-400 text-sm">Total Users</p>
-          <h2 className="text-2xl font-bold mt-2">{totalUsers}</h2>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white/10 backdrop-blur border border-white/20 hover:scale-105 transition">
+        <div className="bg-white/10 p-5 rounded-xl border">
           <p className="text-gray-400 text-sm">Transactions</p>
-          <h2 className="text-2xl font-bold mt-2">{totalTransactions}</h2>
+          <h2 className="text-2xl font-bold">{totalTransactions}</h2>
         </div>
 
-        <div className="p-5 rounded-xl bg-white/10 backdrop-blur border border-white/20 hover:scale-105 transition">
+        <div className="bg-white/10 p-5 rounded-xl border">
           <p className="text-gray-400 text-sm">Revenue</p>
-          <h2 className="text-2xl font-bold mt-2 text-green-400">
+          <h2 className="text-2xl text-green-400 font-bold">
             ₹{totalRevenue}
           </h2>
+        </div>
+
+        <div className="bg-white/10 p-5 rounded-xl border">
+          <p className="text-gray-400 text-sm">Expenses</p>
+          <h2 className="text-2xl text-red-400 font-bold">
+            ₹{totalExpense}
+          </h2>
+        </div>
+
+        <div className="bg-white/10 p-5 rounded-xl border">
+          <p className="text-gray-400 text-sm">Top Category</p>
+          <h2 className="text-xl font-bold">{topCategory}</h2>
         </div>
 
       </div>
 
       {/* 📋 TABLE */}
-      <div className="bg-white/10 backdrop-blur rounded-xl border border-white/20 p-6 mb-8">
-        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+      <div className="bg-white/10 rounded-xl p-6 border mb-8">
+        <h2 className="mb-4 text-lg font-semibold">Manage Transactions</h2>
 
         <table className="w-full text-sm">
-          <thead className="text-gray-400 border-b border-gray-700">
+          <thead className="text-gray-400 border-b">
             <tr>
-              <th className="py-2 text-left">Category</th>
+              <th>Category</th>
               <th>Type</th>
               <th>Amount</th>
               <th>Date</th>
+              <th>Action</th>
             </tr>
           </thead>
 
           <tbody>
             {recent.map((t) => (
-              <tr key={t.id} className="border-b border-gray-800">
-                <td className="py-2">{t.category}</td>
-                <td
-                  className={`${
-                    t.type === "Income"
-                      ? "text-green-400"
-                      : "text-red-400"
-                  }`}
-                >
+              <tr key={t.id} className="border-b border-gray-700">
+
+                <td>{t.category}</td>
+
+                <td className={t.type === "Income" ? "text-green-400" : "text-red-400"}>
                   {t.type}
                 </td>
+
                 <td>{t.amount}</td>
                 <td>{t.date}</td>
+
+                <td className="flex gap-2">
+
+                  <button
+                    onClick={() => setEditingTxn(t)}
+                    className="bg-yellow-500 px-2 py-1 rounded text-xs"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(t.id)}
+                    className="bg-red-500 px-2 py-1 rounded text-xs"
+                  >
+                    Delete
+                  </button>
+
+                </td>
+
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* ℹ️ INFO */}
-      <div className="bg-indigo-600/20 border border-indigo-500 rounded-xl p-6">
-        <p className="text-gray-300">
-          Dynamic Admin Panel: All data is now connected with your transaction system.
-        </p>
-      </div>
+      {/* ✏️ EDIT MODAL */}
+      {editingTxn && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+
+          <div className="bg-white text-black p-6 rounded-xl w-80">
+
+            <h2 className="mb-4 font-bold">Edit Transaction</h2>
+
+            <input
+              className="border p-2 w-full mb-2"
+              value={editingTxn.category}
+              onChange={(e) =>
+                setEditingTxn({ ...editingTxn, category: e.target.value })
+              }
+            />
+
+            <input
+              className="border p-2 w-full mb-2"
+              value={editingTxn.amount.replace("₹", "")}
+              onChange={(e) =>
+                setEditingTxn({
+                  ...editingTxn,
+                  amount: "₹" + e.target.value,
+                })
+              }
+            />
+
+            <input
+              type="date"
+              className="border p-2 w-full mb-4"
+              value={editingTxn.date}
+              onChange={(e) =>
+                setEditingTxn({ ...editingTxn, date: e.target.value })
+              }
+            />
+
+            <div className="flex justify-between">
+              <button
+                onClick={handleSave}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+
+              <button
+                onClick={() => setEditingTxn(null)}
+                className="bg-gray-400 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
