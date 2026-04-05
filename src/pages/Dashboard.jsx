@@ -19,9 +19,7 @@ function Dashboard() {
     addTransaction,
   } = useFinance();
 
-  // 🔐 ROLE (change here)
   const [role, setRole] = useState("Admin");
-
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("Income");
 
@@ -36,7 +34,6 @@ function Dashboard() {
     return parseInt(amt.toString().replace("₹", "")) || 0;
   };
 
-  // 🔥 FILTER + SORT
   const filteredTransactions = transactions
     .filter((t) => {
       if (
@@ -64,10 +61,9 @@ function Dashboard() {
       if (sortBy === "High") return getAmount(b.amount) - getAmount(a.amount);
       if (sortBy === "Low") return getAmount(a.amount) - getAmount(b.amount);
       if (sortBy === "Oldest") return new Date(a.date) - new Date(b.date);
-      return new Date(b.date) - new Date(a.date); // ✅ FIX
+      return new Date(b.date) - new Date(a.date);
     });
 
-  // 💰 CALCULATIONS
   const totalIncome = filteredTransactions
     .filter((t) => t.type === "Income")
     .reduce((sum, t) => sum + getAmount(t.amount), 0);
@@ -78,7 +74,6 @@ function Dashboard() {
 
   const balance = totalIncome - totalExpense;
 
-  // ➕ ADD TRANSACTION
   const handleAdd = () => {
     if (role !== "Admin") {
       alert("Only Admin can add transactions");
@@ -96,41 +91,43 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] min-h-screen">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] text-white">
 
-      {/* 🔐 ROLE SWITCH (ADD HERE 👇) */}
-    <div className="mb-4 flex gap-4 items-center">
+      {/* 🔐 ROLE SWITCH */}
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Dashboard ⚡</h1>
 
-      <span className="px-3 py-1 bg-black text-white rounded">
-        Role: {role}
-      </span>
+        <div className="flex gap-3 items-center">
+          <span className="px-4 py-1 bg-white/10 rounded-full text-sm">
+            {role}
+          </span>
 
-      <button
-        onClick={() =>
-          setRole(role === "Admin" ? "Viewer" : "Admin")
-        }
-        className="bg-purple-500 text-white px-4 py-1 rounded"
-      >
-        Switch to {role === "Admin" ? "Viewer" : "Admin"}
-      </button>
-
-    </div>
+          <button
+            onClick={() =>
+              setRole(role === "Admin" ? "Viewer" : "Admin")
+            }
+            className="bg-indigo-500 px-4 py-1 rounded-full hover:bg-indigo-600"
+          >
+            Switch
+          </button>
+        </div>
+      </div>
 
       {/* 🔍 FILTERS */}
-      <div className="bg-white p-4 rounded-xl shadow mb-6 flex flex-wrap gap-4">
+      <div className="bg-white/10 backdrop-blur p-4 rounded-xl mb-6 flex flex-wrap gap-4 border border-white/20">
 
         <input
           type="text"
           placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 rounded bg-white/10 border border-white/20 text-white"
         />
 
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 rounded bg-white/10 border border-white/20"
         >
           <option value="All">All Categories</option>
           {[...new Set(transactions.map((t) => t.category))].map((cat) => (
@@ -141,7 +138,7 @@ function Dashboard() {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 rounded bg-white/10 border border-white/20"
         >
           <option value="All">All</option>
           <option value="Income">Income</option>
@@ -151,7 +148,7 @@ function Dashboard() {
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 rounded bg-white/10 border border-white/20"
         >
           <option value="All">All Time</option>
           <option value="7">Last 7 Days</option>
@@ -161,12 +158,12 @@ function Dashboard() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 rounded bg-white/10 border border-white/20"
         >
           <option value="Date">Latest</option>
           <option value="Oldest">Oldest</option>
-          <option value="High">High Amount</option>
-          <option value="Low">Low Amount</option>
+          <option value="High">High</option>
+          <option value="Low">Low</option>
         </select>
 
       </div>
@@ -174,35 +171,34 @@ function Dashboard() {
       {/* 💰 CARDS */}
       <div className="grid grid-cols-3 gap-6 mb-6">
 
-        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
+        <div className="bg-green-500/20 p-5 rounded-xl border border-green-400/30">
           <h2>Total Income</h2>
-          <p className="text-2xl font-bold">₹{totalIncome}</p>
+          <p className="text-2xl font-bold text-green-400">₹{totalIncome}</p>
         </div>
 
-        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
+        <div className="bg-red-500/20 p-5 rounded-xl border border-red-400/30">
           <h2>Total Expense</h2>
-          <p className="text-2xl font-bold">₹{totalExpense}</p>
+          <p className="text-2xl font-bold text-red-400">₹{totalExpense}</p>
         </div>
 
-        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
+        <div className="bg-indigo-500/20 p-5 rounded-xl border border-indigo-400/30">
           <h2>Balance</h2>
-          <p className="text-2xl font-bold">₹{balance}</p>
+          <p className="text-2xl font-bold text-indigo-300">₹{balance}</p>
         </div>
 
       </div>
 
-      {/* ➕ ADMIN ONLY BUTTONS */}
+      {/* ➕ ADMIN BUTTONS */}
       {role === "Admin" && (
         <div className="mb-6 flex gap-4">
-
           <button
             onClick={() => {
               setType("Income");
               setShowModal(true);
             }}
-            className="bg-green-500 text-white px-5 py-2 rounded-lg shadow"
+            className="bg-green-500 px-5 py-2 rounded-lg"
           >
-            + Add Income
+            + Income
           </button>
 
           <button
@@ -210,55 +206,54 @@ function Dashboard() {
               setType("Expense");
               setShowModal(true);
             }}
-            className="bg-red-500 text-white px-5 py-2 rounded-lg shadow"
+            className="bg-red-500 px-5 py-2 rounded-lg"
           >
-            + Add Expense
+            + Expense
           </button>
-
         </div>
       )}
 
       {/* 📊 CHARTS */}
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <LineChart transactions={filteredTransactions} />
-        <PieChart transactions={filteredTransactions} />
+        <div className="bg-white/10 p-4 rounded-xl">
+          <LineChart transactions={filteredTransactions} />
+        </div>
+        <div className="bg-white/10 p-4 rounded-xl">
+          <PieChart transactions={filteredTransactions} />
+        </div>
       </div>
 
       {/* 📋 TABLE */}
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-white/10 rounded-xl overflow-hidden border border-white/20">
         <table className="w-full">
-          <thead className="bg-gray-100">
+          <thead className="bg-white/10">
             <tr>
               <th className="p-3">Date</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Type</th>
-              <th className="p-3">Amount</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Amount</th>
             </tr>
           </thead>
 
           <tbody>
             {filteredTransactions.map((t) => (
-              <tr key={t.id} className="text-center border-t hover:bg-gray-50">
+              <tr key={t.id} className="text-center border-t border-white/10">
                 <td className="p-3">{t.date}</td>
-                <td className="p-3">{t.category}</td>
-                <td
-                  className={`p-3 font-semibold ${
-                    t.type === "Income" ? "text-green-600" : "text-red-600"
-                  }`}
-                >
+                <td>{t.category}</td>
+                <td className={t.type === "Income" ? "text-green-400" : "text-red-400"}>
                   {t.type}
                 </td>
-                <td className="p-3">{t.amount}</td>
+                <td>{t.amount}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* 🔥 MODAL (ADMIN ONLY SAFE) */}
+      {/* 🔥 MODAL */}
       {showModal && role === "Admin" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl w-80 shadow">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+          <div className="bg-white text-black p-6 rounded-xl w-80">
 
             <h2 className="mb-4 text-lg font-bold text-center">
               Add {type}
@@ -266,7 +261,7 @@ function Dashboard() {
 
             <input
               placeholder="Amount"
-              className="border p-2 w-full mb-3 rounded"
+              className="border p-2 w-full mb-3"
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
@@ -275,7 +270,7 @@ function Dashboard() {
 
             <input
               placeholder="Category"
-              className="border p-2 w-full mb-3 rounded"
+              className="border p-2 w-full mb-3"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -284,7 +279,7 @@ function Dashboard() {
 
             <input
               type="date"
-              className="border p-2 w-full mb-4 rounded"
+              className="border p-2 w-full mb-4"
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
@@ -294,14 +289,14 @@ function Dashboard() {
             <div className="flex justify-between">
               <button
                 onClick={handleAdd}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2"
               >
                 Add
               </button>
 
               <button
                 onClick={() => setShowModal(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
+                className="bg-gray-400 px-4 py-2"
               >
                 Cancel
               </button>
