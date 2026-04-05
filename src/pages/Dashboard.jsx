@@ -174,17 +174,17 @@ function Dashboard() {
       {/* 💰 CARDS */}
       <div className="grid grid-cols-3 gap-6 mb-6">
 
-        <div className="bg-gradient-to-r from-green-400 to-green-600 text-white p-5 rounded-xl shadow">
+        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
           <h2>Total Income</h2>
           <p className="text-2xl font-bold">₹{totalIncome}</p>
         </div>
 
-        <div className="bg-gradient-to-r from-red-400 to-red-600 text-white p-5 rounded-xl shadow">
+        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
           <h2>Total Expense</h2>
           <p className="text-2xl font-bold">₹{totalExpense}</p>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-5 rounded-xl shadow">
+        <div className="bg-indigo-600/20 text-white p-5 rounded-xl shadow">
           <h2>Balance</h2>
           <p className="text-2xl font-bold">₹{balance}</p>
         </div>
