@@ -114,14 +114,14 @@ function Dashboard() {
       <div className="mb-6 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Finance Dashboard</h1>
 
-        <button
-          onClick={() =>
-            setRole(role === "Admin" ? "Viewer" : "Admin")
-          }
-          className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition"
-        >
-          {role}
-        </button>
+       <select
+  value={role}
+  onChange={(e) => setRole(e.target.value)}
+  className="bg-white/20 text-black p-2 rounded"
+>
+  <option value="Admin">Admin</option>
+  <option value="Viewer">Viewer</option>
+</select>
       </div>
 
       {/* 🔍 FILTERS */}
