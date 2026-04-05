@@ -8,24 +8,36 @@ function Insights({ transactions }) {
     );
   }
 
+  const getAmount = (amt) => {
+    if (!amt) return 0;
+    return parseInt(amt.toString().replace("₹", "")) || 0;
+  };
+
   // Highest spending category
   const expenseTxns = transactions.filter((t) => t.type === "Expense");
   const categoryTotals = {};
-  expenseTxns.forEach((t) => {
-    categoryTotals[t.category] = (categoryTotals[t.category] || 0) + parseInt(t.amount.replace("₹", ""));
-  });
-  const highestCategory = Object.keys(categoryTotals).reduce((a, b) =>
-    categoryTotals[a] > categoryTotals[b] ? a : b
-  );
 
-  // Monthly comparison (simple demo: April vs March)
+  expenseTxns.forEach((t) => {
+    categoryTotals[t.category] =
+      (categoryTotals[t.category] || 0) + getAmount(t.amount);
+  });
+
+  let highestCategory = "No expenses";
+
+  if (Object.keys(categoryTotals).length > 0) {
+    highestCategory = Object.keys(categoryTotals).reduce((a, b) =>
+      categoryTotals[a] > categoryTotals[b] ? a : b
+    );
+  }
+
+  // Monthly totals
   const aprilTotal = transactions
-    .filter((t) => t.date.startsWith("2026-04"))
-    .reduce((sum, t) => sum + parseInt(t.amount.replace("₹", "")), 0);
+    .filter((t) => t.date?.startsWith("2026-04"))
+    .reduce((sum, t) => sum + getAmount(t.amount), 0);
 
   const marchTotal = transactions
-    .filter((t) => t.date.startsWith("2026-03"))
-    .reduce((sum, t) => sum + parseInt(t.amount.replace("₹", "")), 0);
+    .filter((t) => t.date?.startsWith("2026-03"))
+    .reduce((sum, t) => sum + getAmount(t.amount), 0);
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 mt-8">
