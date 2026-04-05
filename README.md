@@ -19,6 +19,35 @@ Track **Income**, **Expenses**, **Balance**, and visualize your data with charts
 
 ---
 
-## 🔗 Live Demo
+## 🛠️ Tech Stack
 
-[View Live Dashboard](https://finance-dashboard-ui-seven-ebon.vercel.app/)
+- **Frontend:** React, Tailwind CSS, Framer Motion  
+- **State Management:** React Context API  
+- **Charts:** Recharts (LineChart, PieChart)  
+- **Data Persistence:** LocalStorage (mock data)
+
+---
+
+## ⚙️ Getting Started
+
+1. **Clone the repository:**
+
+```bash
+git clone https://github.com/your-username/finance-dashboard.git
+cd finance-dashboard
+Install dependencies:
+npm install
+Start the React app:
+npm run dev
+Open in browser:
+
+Navigate to http://localhost:5173 (or as Vite outputs in your terminal).
+
+🔗 Live Demo
+
+View Live Dashboard
+
+📂 Notes
+Admin can add transactions, Viewer has read-only access.
+Dark mode persists using localStorage.
+All data is mock; no real backend integration.
