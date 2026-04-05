@@ -19,8 +19,8 @@ function Dashboard() {
     addTransaction,
   } = useFinance();
 
-  // 🔐 ROLE (change to "User" to test)
-  const role = "Admin";
+  // 🔐 ROLE (change here)
+  const role = "Admin"; // "Viewer"
 
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("Income");
@@ -64,7 +64,7 @@ function Dashboard() {
       if (sortBy === "High") return getAmount(b.amount) - getAmount(a.amount);
       if (sortBy === "Low") return getAmount(a.amount) - getAmount(b.amount);
       if (sortBy === "Oldest") return new Date(a.date) - new Date(b.date);
-      return new Date(b.date) - new Date(a.date); // ✅ FIXED
+      return new Date(b.date) - new Date(a.date); // ✅ FIX
     });
 
   // 💰 CALCULATIONS
@@ -80,6 +80,11 @@ function Dashboard() {
 
   // ➕ ADD TRANSACTION
   const handleAdd = () => {
+    if (role !== "Admin") {
+      alert("Only Admin can add transactions");
+      return;
+    }
+
     addTransaction({
       ...formData,
       type,
@@ -92,6 +97,13 @@ function Dashboard() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+
+      {/* 🔐 ROLE BADGE */}
+      <div className="mb-4">
+        <span className="px-3 py-1 bg-black text-white rounded">
+          Role: {role}
+        </span>
+      </div>
 
       {/* 🔍 FILTERS */}
       <div className="bg-white p-4 rounded-xl shadow mb-6 flex flex-wrap gap-4">
@@ -151,27 +163,27 @@ function Dashboard() {
       {/* 💰 CARDS */}
       <div className="grid grid-cols-3 gap-6 mb-6">
 
-        <div className="bg-gradient-to-r from-green-400 to-green-600 text-white p-5 rounded-xl shadow-lg">
+        <div className="bg-gradient-to-r from-green-400 to-green-600 text-white p-5 rounded-xl shadow">
           <h2>Total Income</h2>
           <p className="text-2xl font-bold">₹{totalIncome}</p>
         </div>
 
-        <div className="bg-gradient-to-r from-red-400 to-red-600 text-white p-5 rounded-xl shadow-lg">
+        <div className="bg-gradient-to-r from-red-400 to-red-600 text-white p-5 rounded-xl shadow">
           <h2>Total Expense</h2>
           <p className="text-2xl font-bold">₹{totalExpense}</p>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-5 rounded-xl shadow-lg">
+        <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-5 rounded-xl shadow">
           <h2>Balance</h2>
           <p className="text-2xl font-bold">₹{balance}</p>
         </div>
 
       </div>
 
-      {/* ➕ BUTTONS */}
-      <div className="mb-6 flex gap-4">
+      {/* ➕ ADMIN ONLY BUTTONS */}
+      {role === "Admin" && (
+        <div className="mb-6 flex gap-4">
 
-        {role === "Admin" && (
           <button
             onClick={() => {
               setType("Income");
@@ -181,19 +193,19 @@ function Dashboard() {
           >
             + Add Income
           </button>
-        )}
 
-        <button
-          onClick={() => {
-            setType("Expense");
-            setShowModal(true);
-          }}
-          className="bg-red-500 text-white px-5 py-2 rounded-lg shadow"
-        >
-          + Add Expense
-        </button>
+          <button
+            onClick={() => {
+              setType("Expense");
+              setShowModal(true);
+            }}
+            className="bg-red-500 text-white px-5 py-2 rounded-lg shadow"
+          >
+            + Add Expense
+          </button>
 
-      </div>
+        </div>
+      )}
 
       {/* 📊 CHARTS */}
       <div className="grid grid-cols-2 gap-4 mb-6">
@@ -232,10 +244,10 @@ function Dashboard() {
         </table>
       </div>
 
-      {/* 🔥 MODAL */}
-      {showModal && (
+      {/* 🔥 MODAL (ADMIN ONLY SAFE) */}
+      {showModal && role === "Admin" && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl w-80 shadow-lg">
+          <div className="bg-white p-6 rounded-xl w-80 shadow">
 
             <h2 className="mb-4 text-lg font-bold text-center">
               Add {type}
@@ -271,14 +283,14 @@ function Dashboard() {
             <div className="flex justify-between">
               <button
                 onClick={handleAdd}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-500 text-white px-4 py-2 rounded"
               >
                 Add
               </button>
 
               <button
                 onClick={() => setShowModal(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded-lg"
+                className="bg-gray-400 text-white px-4 py-2 rounded"
               >
                 Cancel
               </button>
