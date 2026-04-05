@@ -20,7 +20,7 @@ function Dashboard() {
   } = useFinance();
 
   // 🔐 ROLE (change here)
-  const role = "Admin"; // "Viewer"
+  const [role, setRole] = useState("Admin");
 
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("Income");
@@ -98,12 +98,23 @@ function Dashboard() {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
 
-      {/* 🔐 ROLE BADGE */}
-      <div className="mb-4">
-        <span className="px-3 py-1 bg-black text-white rounded">
-          Role: {role}
-        </span>
-      </div>
+      {/* 🔐 ROLE SWITCH (ADD HERE 👇) */}
+    <div className="mb-4 flex gap-4 items-center">
+
+      <span className="px-3 py-1 bg-black text-white rounded">
+        Role: {role}
+      </span>
+
+      <button
+        onClick={() =>
+          setRole(role === "Admin" ? "Viewer" : "Admin")
+        }
+        className="bg-purple-500 text-white px-4 py-1 rounded"
+      >
+        Switch to {role === "Admin" ? "Viewer" : "Admin"}
+      </button>
+
+    </div>
 
       {/* 🔍 FILTERS */}
       <div className="bg-white p-4 rounded-xl shadow mb-6 flex flex-wrap gap-4">
