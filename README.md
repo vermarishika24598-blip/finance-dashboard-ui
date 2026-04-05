@@ -45,7 +45,7 @@ Navigate to http://localhost:5173 (or as Vite outputs in your terminal).
 
 🔗 Live Demo
 
-View Live Dashboard
+https://finance-dashboard-ui-seven-ebon.vercel.app/
 
 📂 Notes
 Admin can add transactions, Viewer has read-only access.
