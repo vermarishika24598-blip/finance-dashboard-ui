@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useFinance } from "../context/FinanceContext";
 import LineChart from "../components/LineChart";
 import PieChart from "../components/PieChart";
@@ -20,27 +21,17 @@ function Dashboard() {
     setDateRange,
   } = useFinance();
 
-  // Helper function for date range filter
-const checkDateRange = (txnDate, range) => {
-  const date = new Date(txnDate);
-  const today = new Date();
+  // ✅ Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [type, setType] = useState("Income");
 
-  if (range === "Last7") {
-    const last7 = new Date();
-    last7.setDate(today.getDate() - 7);
-    return date >= last7;
-  }
+  const [form, setForm] = useState({
+    amount: "",
+    category: "",
+    date: "",
+  });
 
-  if (range === "ThisMonth") {
-    return (
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  }
-
-  return true; // "All" case
-};
-
+  // ✅ Filters
   const filteredTransactions = transactions.filter((txn) => {
     const matchesSearch =
       txn.category.toLowerCase().includes(search.toLowerCase()) ||
@@ -52,250 +43,193 @@ const checkDateRange = (txnDate, range) => {
     const matchesCategory =
       filterCategory === "All" ? true : txn.category === filterCategory;
 
-    const matchesDate =
-      dateRange === "All" ? true : checkDateRange(txn.date, dateRange);
-
-    return matchesSearch && matchesType && matchesCategory && matchesDate;
+    return matchesSearch && matchesType && matchesCategory;
   });
 
-  
-  
+  // ✅ Dynamic Calculations
+  const income = transactions
+    .filter((t) => t.type === "Income")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
-  // Export CSV
-  const exportCSV = () => {
-    const rows = [
-      ["Date", "Category", "Type", "Amount"],
-      ...transactions.map((t) => [t.date, t.category, t.type, t.amount]),
-    ];
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      rows.map((e) => e.join(",")).join("\n");
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "transactions.csv");
-    document.body.appendChild(link);
-    link.click();
-  };
-  
+  const expense = transactions
+    .filter((t) => t.type === "Expense")
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+
+  const balance = income - expense;
 
   return (
     <div className="flex min-h-screen bg-[#020617] text-white">
 
       {/* Sidebar */}
-      <motion.div
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="w-64 bg-[#0f172a] border-r border-gray-800 p-6 hidden md:flex flex-col"
-      >
+      <div className="w-64 bg-[#0f172a] border-r border-gray-800 p-6 hidden md:flex flex-col">
         <h1 className="text-2xl font-bold mb-10">💰 Finance</h1>
-
-        <nav className="space-y-4 text-gray-400">
-          <p className="hover:text-white cursor-pointer">Dashboard</p>
-          <p className="hover:text-white cursor-pointer">Transactions</p>
-          <p className="hover:text-white cursor-pointer">Reports</p>
-        </nav>
 
         <div className="mt-auto">
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full bg-[#1e293b] p-2 rounded-lg border border-gray-700"
+            className="w-full bg-[#1e293b] p-2 rounded-lg"
           >
             <option value="Viewer">Viewer</option>
             <option value="Admin">Admin</option>
           </select>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main */}
       <div className="flex-1 p-6">
 
-        {/* Top Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col md:flex-row justify-between gap-4 mb-8"
-        >
+        {/* Top */}
+        <div className="flex justify-between mb-6">
           <h1 className="text-3xl font-bold">Dashboard</h1>
 
-          <div className="flex gap-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-[#0f172a] border border-gray-700 focus:outline-none"
-            />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="px-4 py-2 rounded-lg bg-[#0f172a]"
+          />
+        </div>
 
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-[#0f172a] border border-gray-700"
-            >
-              <option value="All">All</option>
-              <option value="Income">Income</option>
-              <option value="Expense">Expense</option>
-            </select>
-
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-[#0f172a] border border-gray-700"
-            >
-              <option value="All">All Categories</option>
-              <option value="Food">Food</option>
-              <option value="Bills">Bills</option>
-              <option value="Shopping">Shopping</option>
-              <option value="Transport">Transport</option>
-              <option value="Salary">Salary</option>
-            </select>
-
-            <select
-              value={dateRange}
-              onChange={(e) => setDateRange(e.target.value)}
-              className="px-4 py-2 rounded-lg bg-[#0f172a] border border-gray-700"
-            >
-              <option value="All">All Dates</option>
-              <option value="Last7">Last 7 Days</option>
-              <option value="ThisMonth">This Month</option>
-            </select>
-          </div>
-        </motion.div>
-
-        {/* Stats */}
+        {/* 🔥 Dynamic Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           {[
-            { label: "Balance", value: "₹50,000", color: "text-white" },
-            { label: "Income", value: "₹20,000", color: "text-green-400" },
-            { label: "Expense", value: "₹10,000", color: "text-red-400" },
+            { label: "Balance", value: `₹${balance}`, color: "text-white" },
+            { label: "Income", value: `₹${income}`, color: "text-green-400" },
+            { label: "Expense", value: `₹${expense}`, color: "text-red-400" },
           ].map((card, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.2 }}
-              className="p-5 bg-[#0f172a] rounded-xl border border-gray-800"
-            >
-              <p className="text-gray-400 text-sm">{card.label}</p>
-              <h2 className={`text-2xl font-bold mt-2 ${card.color}`}>
+            <div key={i} className="p-5 bg-[#0f172a] rounded-xl">
+              <p className="text-gray-400">{card.label}</p>
+              <h2 className={`text-2xl font-bold ${card.color}`}>
                 {card.value}
               </h2>
-            </motion.div>
+            </div>
           ))}
         </div>
 
+        {/* 🔥 Add Buttons */}
+        {role === "Admin" && (
+          <div className="flex gap-4 mb-6">
+            <button
+              onClick={() => {
+                setType("Income");
+                setShowModal(true);
+              }}
+              className="bg-green-500 px-4 py-2 rounded"
+            >
+              + Income
+            </button>
+
+            <button
+              onClick={() => {
+                setType("Expense");
+                setShowModal(true);
+              }}
+              className="bg-red-500 px-4 py-2 rounded"
+            >
+              + Expense
+            </button>
+          </div>
+        )}
+
         {/* Charts */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="bg-[#0f172a] p-5 rounded-xl border border-gray-800"
-          >
-            <LineChart />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-[#0f172a] p-5 rounded-xl border border-gray-800"
-          >
-            <PieChart />
-          </motion.div>
+          <LineChart />
+          <PieChart />
         </div>
 
         {/* Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="bg-[#0f172a] p-5 rounded-xl border border-gray-800 mb-8"
-        >
-          <h2 className="mb-4 font-semibold">Transactions</h2>
+        <div className="bg-[#0f172a] p-5 rounded-xl mb-8">
+          <h2 className="mb-4">Transactions</h2>
 
-          <div className="overflow-auto">
-            <table className="w-full text-sm">
-              <thead className="text-gray-400 border-b border-gray-700">
-                <tr>
-                  <th className="py-2 text-left">Date</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th className="text-right">Amount</th>
+          <table className="w-full">
+            <thead>
+              <tr className="text-gray-400">
+                <th>Date</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredTransactions.map((txn, i) => (
+                <tr key={i} className="border-b border-gray-700">
+                  <td>{txn.date}</td>
+                  <td>{txn.category}</td>
+                  <td>{txn.type}</td>
+                  <td>₹{txn.amount}</td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {filteredTransactions.map((txn, i) => (
-                  <motion.tr
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.1 }}
-                    className="border-b border-gray-800"
-                  >
-                    <td className="py-2">{txn.date}</td>
-                    <td>{txn.category}</td>
-                    <td>
-                      <span
-                        className={`text-xs ${
-                          txn.type === "Income"
-                            ? "text-green-400"
-                            : "text-red-400"
-                        }`}
-                      >
-                        {txn.type}
-                      </span>
-                    </td>
-                    <td className="text-right font-semibold">
-                      {txn.amount}
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </motion.div>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         {/* Insights */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-[#0f172a] p-5 rounded-xl border border-gray-800 mb-8"
-        >
-          <Insights transactions={transactions} />
-        </motion.div>
+        <Insights transactions={transactions} />
 
-        {/* Export Button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={exportCSV}
-          className="bg-green-500 px-5 py-2 rounded-lg hover:bg-green-600"
-        >
-          Export to CSV
-        </motion.button>
+        {/* 🔥 Modal */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-[#0f172a] p-6 rounded-xl w-80">
+              <h2 className="mb-4">Add {type}</h2>
 
-        {/* Button */}
-        {role === "Admin" && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() =>
-              addTransaction({
-                date: "2026-04-05",
-                category: "Bills",
-                type: "Expense",
-                amount: "₹800",
-              })
-            }
-            className="bg-indigo-500 px-5 py-2 rounded-lg hover:bg-indigo-600"
-          >
-            Add Transaction
-          </motion.button>
+              <input
+                type="number"
+                placeholder="Amount"
+                className="w-full mb-3 p-2 bg-[#020617]"
+                value={form.amount}
+                onChange={(e) =>
+                  setForm({ ...form, amount: e.target.value })
+                }
+              />
+
+              <input
+                type="text"
+                placeholder="Category"
+                className="w-full mb-3 p-2 bg-[#020617]"
+                value={form.category}
+                onChange={(e) =>
+                  setForm({ ...form, category: e.target.value })
+                }
+              />
+
+              <input
+                type="date"
+                className="w-full mb-4 p-2 bg-[#020617]"
+                value={form.date}
+                onChange={(e) =>
+                  setForm({ ...form, date: e.target.value })
+                }
+              />
+
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-500 px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={() => {
+                    addTransaction({
+                      ...form,
+                      type,
+                      amount: Number(form.amount),
+                    });
+
+                    setShowModal(false);
+                    setForm({ amount: "", category: "", date: "" });
+                  }}
+                  className="bg-blue-500 px-4 py-2 rounded"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
