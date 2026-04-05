@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useFinance } from "../context/FinanceContext";
 import LineChart from "../components/LineChart";
+import PieChart from "../components/PieChart";
 
 function Dashboard() {
   const {
@@ -175,7 +176,10 @@ function Dashboard() {
         </button>
       </div>
 
-      <LineChart transactions={filteredTransactions} />
+      <div className="grid grid-cols-2 gap-4">
+  <LineChart transactions={filteredTransactions} />
+  <PieChart transactions={filteredTransactions} />
+</div>
 
       {/* 📋 TABLE */}
       <table className="w-full border">
