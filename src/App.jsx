@@ -33,21 +33,30 @@ function App() {
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-black"}`}>
       {/* Navbar */}
-      <nav className="bg-blue-600 text-white p-4 flex gap-4 justify-between">
-        <div className="flex gap-4">
-          <Link to="/">Dashboard</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Signup</Link>
-          <Link to="/profile">Profile</Link>
-          <Link to="/admin">Admin</Link>
-        </div>
-        <button
-          onClick={toggleDarkMode}
-          className="bg-gray-800 px-3 py-1 rounded text-sm"
-        >
-          {darkMode ? "Light Mode" : "Dark Mode"}
-        </button>
-      </nav>
+     <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white p-4 flex justify-between items-center shadow-lg rounded-b-lg">
+  {/* Left Links */}
+  <div className="flex gap-6 items-center">
+    <Link className="font-semibold hover:underline transition" to="/">Dashboard</Link>
+    <Link className="font-semibold hover:underline transition" to="/profile">Profile</Link>
+    <Link className="font-semibold hover:underline transition" to="/admin">Admin</Link>
+    <Link className="font-semibold hover:underline transition" to="/login">Login</Link>
+    <Link className="font-semibold hover:underline transition" to="/signup">Signup</Link>
+  </div>
+
+  {/* Right Controls */}
+  <div className="flex items-center gap-4">
+    {/* Dark Mode Toggle */}
+    <button
+      onClick={toggleDarkMode}
+      className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition font-semibold text-sm"
+    >
+      {darkMode ? "Light Mode" : "Dark Mode"}
+    </button>
+
+    {/* Role Badge (optional: replace `Viewer` with dynamic user.role if available) */}
+   
+  </div>
+</nav>
 
       {/* Routes */}
       <Routes>
