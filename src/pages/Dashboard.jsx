@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useFinance } from "../context/FinanceContext";
+import LineChart from "../components/LineChart";
 
 function Dashboard() {
   const {
@@ -173,6 +174,8 @@ function Dashboard() {
           Add Expense
         </button>
       </div>
+
+      <LineChart transactions={filteredTransactions} />
 
       {/* 📋 TABLE */}
       <table className="w-full border">
