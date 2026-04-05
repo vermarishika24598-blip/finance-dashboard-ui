@@ -1,6 +1,14 @@
 import React from "react";
 
 function Profile({ user }) {
+  // ✅ Default object to prevent undefined errors
+  const currentUser = user || {
+    name: "Guest",
+    email: "notset@example.com",
+    role: "Viewer",
+    status: "Inactive",
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] text-white">
 
@@ -10,15 +18,15 @@ function Profile({ user }) {
         {/* Avatar */}
         <div className="flex flex-col items-center mb-6">
           <div className="w-20 h-20 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-2xl font-bold shadow-lg">
-            {user.name.charAt(0)}
+            {currentUser.name?.charAt(0) || "G"}
           </div>
 
           <h1 className="text-2xl font-semibold mt-3">
-            {user.name}
+            {currentUser.name}
           </h1>
 
           <p className="text-gray-400 text-sm">
-            {user.role}
+            {currentUser.role}
           </p>
         </div>
 
@@ -27,24 +35,24 @@ function Profile({ user }) {
 
           <div className="flex justify-between border-b border-gray-700 pb-2">
             <span className="text-gray-400">Email</span>
-            <span>{user.email}</span>
+            <span>{currentUser.email}</span>
           </div>
 
           <div className="flex justify-between border-b border-gray-700 pb-2">
             <span className="text-gray-400">Role</span>
             <span className={`font-semibold ${
-              user.role === "Admin"
+              currentUser.role === "Admin"
                 ? "text-purple-400"
                 : "text-indigo-400"
             }`}>
-              {user.role}
+              {currentUser.role}
             </span>
           </div>
 
           <div className="flex justify-between border-b border-gray-700 pb-2">
             <span className="text-gray-400">Status</span>
             <span className="text-green-400">
-              {user.status}
+              {currentUser.status}
             </span>
           </div>
 
@@ -57,7 +65,7 @@ function Profile({ user }) {
             Edit Profile
           </button>
 
-          {user.role === "Admin" && (
+          {currentUser.role === "Admin" && (
             <button className="w-full py-3 rounded-lg bg-red-500/80 hover:bg-red-500 transition">
               Delete User
             </button>
