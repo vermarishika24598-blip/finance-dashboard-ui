@@ -34,6 +34,7 @@ function Dashboard() {
     return parseInt(amt.toString().replace("₹", "")) || 0;
   };
 
+  // 🔥 FILTER + SORT
   const filteredTransactions = transactions
     .filter((t) => {
       if (
@@ -64,6 +65,7 @@ function Dashboard() {
       return new Date(b.date) - new Date(a.date);
     });
 
+  // 💰 CALCULATIONS
   const totalIncome = filteredTransactions
     .filter((t) => t.type === "Income")
     .reduce((sum, t) => sum + getAmount(t.amount), 0);
@@ -74,6 +76,21 @@ function Dashboard() {
 
   const balance = totalIncome - totalExpense;
 
+  // 🔥 INSIGHTS
+  const categorySpend = {};
+  filteredTransactions.forEach((t) => {
+    if (t.type === "Expense") {
+      categorySpend[t.category] =
+        (categorySpend[t.category] || 0) + getAmount(t.amount);
+    }
+  });
+
+  const topCategory = Object.keys(categorySpend).reduce((a, b) =>
+    categorySpend[a] > categorySpend[b] ? a : b,
+    "N/A"
+  );
+
+  // ➕ ADD
   const handleAdd = () => {
     if (role !== "Admin") {
       alert("Only Admin can add transactions");
@@ -91,43 +108,37 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] text-white">
+    <div className="p-6 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] min-h-screen text-white">
 
       {/* 🔐 ROLE SWITCH */}
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Dashboard ⚡</h1>
+        <h1 className="text-2xl font-bold">Finance Dashboard</h1>
 
-        <div className="flex gap-3 items-center">
-          <span className="px-4 py-1 bg-white/10 rounded-full text-sm">
-            {role}
-          </span>
-
-          <button
-            onClick={() =>
-              setRole(role === "Admin" ? "Viewer" : "Admin")
-            }
-            className="bg-indigo-500 px-4 py-1 rounded-full hover:bg-indigo-600"
-          >
-            Switch
-          </button>
-        </div>
+        <button
+          onClick={() =>
+            setRole(role === "Admin" ? "Viewer" : "Admin")
+          }
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:scale-105 transition"
+        >
+          {role}
+        </button>
       </div>
 
       {/* 🔍 FILTERS */}
-      <div className="bg-white/10 backdrop-blur p-4 rounded-xl mb-6 flex flex-wrap gap-4 border border-white/20">
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl mb-6 flex flex-wrap gap-3">
 
         <input
           type="text"
           placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 rounded bg-white/10 border border-white/20 text-white"
+          className="p-2 rounded bg-white/20 outline-none"
         />
 
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="p-2 rounded bg-white/10 border border-white/20"
+          className="p-2 rounded bg-white/20"
         >
           <option value="All">All Categories</option>
           {[...new Set(transactions.map((t) => t.category))].map((cat) => (
@@ -138,7 +149,7 @@ function Dashboard() {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="p-2 rounded bg-white/10 border border-white/20"
+          className="p-2 rounded bg-white/20"
         >
           <option value="All">All</option>
           <option value="Income">Income</option>
@@ -148,7 +159,7 @@ function Dashboard() {
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
-          className="p-2 rounded bg-white/10 border border-white/20"
+          className="p-2 rounded bg-white/20"
         >
           <option value="All">All Time</option>
           <option value="7">Last 7 Days</option>
@@ -158,37 +169,53 @@ function Dashboard() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 rounded bg-white/10 border border-white/20"
+          className="p-2 rounded bg-white/20"
         >
           <option value="Date">Latest</option>
           <option value="Oldest">Oldest</option>
           <option value="High">High</option>
           <option value="Low">Low</option>
         </select>
-
       </div>
 
       {/* 💰 CARDS */}
-      <div className="grid grid-cols-3 gap-6 mb-6">
+      <div className="grid md:grid-cols-3 gap-6 mb-6">
 
-        <div className="bg-green-500/20 p-5 rounded-xl border border-green-400/30">
-          <h2>Total Income</h2>
-          <p className="text-2xl font-bold text-green-400">₹{totalIncome}</p>
-        </div>
-
-        <div className="bg-red-500/20 p-5 rounded-xl border border-red-400/30">
-          <h2>Total Expense</h2>
-          <p className="text-2xl font-bold text-red-400">₹{totalExpense}</p>
-        </div>
-
-        <div className="bg-indigo-500/20 p-5 rounded-xl border border-indigo-400/30">
-          <h2>Balance</h2>
-          <p className="text-2xl font-bold text-indigo-300">₹{balance}</p>
-        </div>
+        {[{
+          title: "Income",
+          value: totalIncome,
+          color: "from-green-500 to-emerald-500"
+        },{
+          title: "Expense",
+          value: totalExpense,
+          color: "from-red-500 to-pink-500"
+        },{
+          title: "Balance",
+          value: balance,
+          color: "from-indigo-500 to-purple-500"
+        }].map((card, i) => (
+          <div key={i} className={`p-5 rounded-xl bg-gradient-to-r ${card.color} shadow-lg hover:scale-105 transition`}>
+            <h2>{card.title}</h2>
+            <p className="text-2xl font-bold">₹{card.value}</p>
+          </div>
+        ))}
 
       </div>
 
-      {/* ➕ ADMIN BUTTONS */}
+      {/* 📊 CHARTS */}
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <LineChart transactions={filteredTransactions} />
+        <PieChart transactions={filteredTransactions} />
+      </div>
+
+      {/* 🔥 INSIGHTS */}
+      <div className="bg-white/10 p-4 rounded-xl mb-6">
+        <h2 className="font-semibold mb-2">Insights</h2>
+        <p>Top Spending Category: {topCategory}</p>
+        <p>Total Transactions: {filteredTransactions.length}</p>
+      </div>
+
+      {/* ➕ ADMIN */}
       {role === "Admin" && (
         <div className="mb-6 flex gap-4">
           <button
@@ -196,7 +223,7 @@ function Dashboard() {
               setType("Income");
               setShowModal(true);
             }}
-            className="bg-green-500 px-5 py-2 rounded-lg"
+            className="bg-green-500 px-5 py-2 rounded-lg hover:scale-105 transition"
           >
             + Income
           </button>
@@ -206,62 +233,62 @@ function Dashboard() {
               setType("Expense");
               setShowModal(true);
             }}
-            className="bg-red-500 px-5 py-2 rounded-lg"
+            className="bg-red-500 px-5 py-2 rounded-lg hover:scale-105 transition"
           >
             + Expense
           </button>
         </div>
       )}
 
-      {/* 📊 CHARTS */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white/10 p-4 rounded-xl">
-          <LineChart transactions={filteredTransactions} />
-        </div>
-        <div className="bg-white/10 p-4 rounded-xl">
-          <PieChart transactions={filteredTransactions} />
-        </div>
-      </div>
-
       {/* 📋 TABLE */}
-      <div className="bg-white/10 rounded-xl overflow-hidden border border-white/20">
-        <table className="w-full">
-          <thead className="bg-white/10">
+      <div className="bg-white/10 rounded-xl overflow-auto">
+        <table className="w-full text-center">
+          <thead className="bg-white/20">
             <tr>
               <th className="p-3">Date</th>
-              <th>Category</th>
-              <th>Type</th>
-              <th>Amount</th>
+              <th className="p-3">Category</th>
+              <th className="p-3">Type</th>
+              <th className="p-3">Amount</th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredTransactions.map((t) => (
-              <tr key={t.id} className="text-center border-t border-white/10">
-                <td className="p-3">{t.date}</td>
-                <td>{t.category}</td>
-                <td className={t.type === "Income" ? "text-green-400" : "text-red-400"}>
-                  {t.type}
+            {filteredTransactions.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="p-6 text-gray-400">
+                  No transactions found 🚫
                 </td>
-                <td>{t.amount}</td>
               </tr>
-            ))}
+            ) : (
+              filteredTransactions.map((t) => (
+                <tr key={t.id} className="border-t border-white/10 hover:bg-white/10">
+                  <td className="p-3">{t.date}</td>
+                  <td className="p-3">{t.category}</td>
+                  <td className={`p-3 font-semibold ${
+                    t.type === "Income" ? "text-green-400" : "text-red-400"
+                  }`}>
+                    {t.type}
+                  </td>
+                  <td className="p-3">{t.amount}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* 🔥 MODAL */}
-      {showModal && role === "Admin" && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-          <div className="bg-white text-black p-6 rounded-xl w-80">
+      {showModal && (
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center">
+          <div className="bg-[#0f172a] p-6 rounded-xl w-80">
 
-            <h2 className="mb-4 text-lg font-bold text-center">
+            <h2 className="mb-4 text-center font-bold">
               Add {type}
             </h2>
 
             <input
               placeholder="Amount"
-              className="border p-2 w-full mb-3"
+              className="p-2 w-full mb-3 rounded bg-white/20"
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
@@ -270,7 +297,7 @@ function Dashboard() {
 
             <input
               placeholder="Category"
-              className="border p-2 w-full mb-3"
+              className="p-2 w-full mb-3 rounded bg-white/20"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
@@ -279,7 +306,7 @@ function Dashboard() {
 
             <input
               type="date"
-              className="border p-2 w-full mb-4"
+              className="p-2 w-full mb-4 rounded bg-white/20"
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
@@ -289,14 +316,14 @@ function Dashboard() {
             <div className="flex justify-between">
               <button
                 onClick={handleAdd}
-                className="bg-blue-500 text-white px-4 py-2"
+                className="bg-indigo-500 px-4 py-2 rounded"
               >
                 Add
               </button>
 
               <button
                 onClick={() => setShowModal(false)}
-                className="bg-gray-400 px-4 py-2"
+                className="bg-gray-500 px-4 py-2 rounded"
               >
                 Cancel
               </button>
