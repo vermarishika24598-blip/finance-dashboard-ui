@@ -83,13 +83,64 @@ function Dashboard() {
         <div className="flex justify-between mb-6">
           <h1 className="text-3xl font-bold">Dashboard</h1>
 
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-[#0f172a]"
-          />
+          <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 items-center">
+
+  {/* 🔍 Search */}
+  <input
+    type="text"
+    placeholder="Search..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="p-2 border rounded"
+  />
+
+  {/* 📂 Category */}
+  <select
+    value={filterCategory}
+    onChange={(e) => setFilterCategory(e.target.value)}
+    className="p-2 border rounded"
+  >
+    <option value="All">All Categories</option>
+    {[...new Set(transactions.map(t => t.category))].map((cat) => (
+      <option key={cat} value={cat}>{cat}</option>
+    ))}
+  </select>
+
+  {/* 💸 Type */}
+  <select
+    value={filterType}
+    onChange={(e) => setFilterType(e.target.value)}
+    className="p-2 border rounded"
+  >
+    <option value="All">All</option>
+    <option value="Income">Income</option>
+    <option value="Expense">Expense</option>
+  </select>
+
+  {/* 📅 Date */}
+  <select
+    value={dateRange}
+    onChange={(e) => setDateRange(e.target.value)}
+    className="p-2 border rounded"
+  >
+    <option value="All">All Time</option>
+    <option value="7">Last 7 Days</option>
+    <option value="30">Last 30 Days</option>
+  </select>
+
+  {/* 📊 Sort */}
+  <select
+    value={sortBy}
+    onChange={(e) => setSortBy(e.target.value)}
+    className="p-2 border rounded"
+  >
+    <option value="Date">Latest</option>
+    <option value="Oldest">Oldest</option>
+    <option value="High">Highest Amount</option>
+    <option value="Low">Lowest Amount</option>
+  </select>
+
+</div>     
         </div>
 
         {/* 🔥 Dynamic Cards */}
