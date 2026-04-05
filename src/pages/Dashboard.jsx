@@ -96,7 +96,7 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] min-h-screen">
 
       {/* 🔐 ROLE SWITCH (ADD HERE 👇) */}
     <div className="mb-4 flex gap-4 items-center">
