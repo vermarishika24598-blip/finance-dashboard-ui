@@ -44,18 +44,7 @@ function App() {
   </div>
 
   {/* Right Controls */}
-  <div className="flex items-center gap-4">
-    {/* Dark Mode Toggle */}
-    <button
-      onClick={toggleDarkMode}
-      className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition font-semibold text-sm"
-    >
-      {darkMode ? "Light Mode" : "Dark Mode"}
-    </button>
 
-    {/* Role Badge (optional: replace `Viewer` with dynamic user.role if available) */}
-   
-  </div>
 </nav>
 
       {/* Routes */}
