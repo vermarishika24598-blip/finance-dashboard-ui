@@ -138,48 +138,73 @@ function Dashboard() {
           className="flex-1 p-3 rounded-xl bg-white/20 placeholder-gray-300 outline-none focus:ring-2 focus:ring-indigo-500 transition"
         />
 
-        <select
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
-        >
-          <option value="All">All Categories</option>
-          {[...new Set(transactions.map((t) => t.category))].map((cat) => (
-            <option key={cat}>{cat}</option>
-          ))}
-        </select>
+         <select
+  value={filterCategory}
+  onChange={(e) => setFilterCategory(e.target.value)}
+  className="p-3 rounded-xl bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none"
+>
+  <option value="All" className="bg-gray-800 text-white">
+    All Categories
+  </option>
+  {[...new Set(transactions.map((t) => t.category))].map((cat) => (
+    <option key={cat} className="bg-gray-800 text-white">
+      {cat}
+    </option>
+  ))}
+</select>
 
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
-        >
-          <option value="All">All Types</option>
-          <option value="Income">Income</option>
-          <option value="Expense">Expense</option>
-        </select>
+<select
+  value={filterType}
+  onChange={(e) => setFilterType(e.target.value)}
+  className="p-3 rounded-xl bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none"
+>
+  <option value="All" className="bg-gray-800 text-white">
+    All Types
+  </option>
+  <option value="Income" className="bg-gray-800 text-white">
+    Income
+  </option>
+  <option value="Expense" className="bg-gray-800 text-white">
+    Expense
+  </option>
+</select>
 
-        <select
-          value={dateRange}
-          onChange={(e) => setDateRange(e.target.value)}
-          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
-        >
-          <option value="All">All Time</option>
-          <option value="7">Last 7 Days</option>
-          <option value="30">Last 30 Days</option>
-        </select>
+<select
+  value={dateRange}
+  onChange={(e) => setDateRange(e.target.value)}
+  className="p-3 rounded-xl bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none"
+>
+  <option value="All" className="bg-gray-800 text-white">
+    All Time
+  </option>
+  <option value="7" className="bg-gray-800 text-white">
+    Last 7 Days
+  </option>
+  <option value="30" className="bg-gray-800 text-white">
+    Last 30 Days
+  </option>
+</select>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
-        >
-          <option value="Date">Latest</option>
-          <option value="Oldest">Oldest</option>
-          <option value="High">High</option>
-          <option value="Low">Low</option>
-        </select>
-      </div>
+<select
+  value={sortBy}
+  onChange={(e) => setSortBy(e.target.value)}
+  className="p-3 rounded-xl bg-gray-800 text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition appearance-none"
+>
+  <option value="Date" className="bg-gray-800 text-white">
+    Latest
+  </option>
+  <option value="Oldest" className="bg-gray-800 text-white">
+    Oldest
+  </option>
+  <option value="High" className="bg-gray-800 text-white">
+    High
+  </option>
+  <option value="Low" className="bg-gray-800 text-white">
+    Low
+  </option>
+</select>
+        
+              </div>
 
       {/* 💰 Cards */}
       <div className="grid md:grid-cols-3 gap-6 mb-6">
