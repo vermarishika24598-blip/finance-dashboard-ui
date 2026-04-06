@@ -107,38 +107,41 @@ function Dashboard() {
     setFormData({ amount: "", category: "", date: "" });
   };
 
+  // Helper to format numbers with commas
+  const formatCurrency = (num) =>
+    num.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+
   return (
-    <div className="p-6 bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e293b] min-h-screen text-white">
-
-      {/* 🔐 ROLE SWITCH */}
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Finance Dashboard</h1>
-
-       <select
-  value={role}
-  onChange={(e) => setRole(e.target.value)}
-  className="bg-white/20 text-black p-2 rounded"
->
-  <option value="Admin">Admin</option>
-  <option value="Viewer">Viewer</option>
-</select>
+    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900 text-white font-sans">
+      {/* 🔐 Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-indigo-400 drop-shadow-lg mb-3 md:mb-0">
+          Finance Dashboard
+        </h1>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="bg-indigo-600/30 hover:bg-indigo-600/50 text-white px-4 py-2 rounded-full transition"
+        >
+          <option value="Admin">Admin</option>
+          <option value="Viewer">Viewer</option>
+        </select>
       </div>
 
-      {/* 🔍 FILTERS */}
-      <div className="bg-white/10 backdrop-blur-md p-4 rounded-xl mb-6 flex flex-wrap gap-3">
-
+      {/* 🔍 Filters */}
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl mb-6 flex flex-wrap gap-3 shadow-lg">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search by Category or Type..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="p-2 rounded bg-white/20 outline-none"
+          className="flex-1 p-3 rounded-xl bg-white/20 placeholder-gray-300 outline-none focus:ring-2 focus:ring-indigo-500 transition"
         />
 
         <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="p-2 rounded bg-white/20"
+          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
         >
           <option value="All">All Categories</option>
           {[...new Set(transactions.map((t) => t.category))].map((cat) => (
@@ -149,9 +152,9 @@ function Dashboard() {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
-          className="p-2 rounded bg-white/20"
+          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
         >
-          <option value="All">All</option>
+          <option value="All">All Types</option>
           <option value="Income">Income</option>
           <option value="Expense">Expense</option>
         </select>
@@ -159,7 +162,7 @@ function Dashboard() {
         <select
           value={dateRange}
           onChange={(e) => setDateRange(e.target.value)}
-          className="p-2 rounded bg-white/20"
+          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
         >
           <option value="All">All Time</option>
           <option value="7">Last 7 Days</option>
@@ -169,7 +172,7 @@ function Dashboard() {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 rounded bg-white/20"
+          className="p-3 rounded-xl bg-white/20 hover:bg-white/30 transition"
         >
           <option value="Date">Latest</option>
           <option value="Oldest">Oldest</option>
@@ -178,71 +181,80 @@ function Dashboard() {
         </select>
       </div>
 
-      {/* 💰 CARDS */}
+      {/* 💰 Cards */}
       <div className="grid md:grid-cols-3 gap-6 mb-6">
-
-        {[{
-          title: "Income",
-          value: totalIncome,
-          color: "from-green-500 to-emerald-500"
-        },{
-          title: "Expense",
-          value: totalExpense,
-          color: "from-red-500 to-pink-500"
-        },{
-          title: "Balance",
-          value: balance,
-          color: "from-indigo-500 to-purple-500"
-        }].map((card, i) => (
-          <div key={i} className={`p-5 rounded-xl bg-gradient-to-r ${card.color} shadow-lg hover:scale-105 transition`}>
-            <h2>{card.title}</h2>
-            <p className="text-2xl font-bold">₹{card.value}</p>
+        {[
+          { title: "Income", value: totalIncome, color: "from-green-500 to-emerald-500" },
+          { title: "Expense", value: totalExpense, color: "from-red-500 to-pink-500" },
+          { title: "Balance", value: balance, color: "from-indigo-500 to-purple-500" },
+        ].map((card, i) => (
+          <div
+            key={i}
+            className={`p-6 rounded-2xl bg-gradient-to-r ${card.color} shadow-2xl hover:scale-105 transition transform`}
+          >
+            <h2 className="text-lg font-semibold">{card.title}</h2>
+            <p className="text-2xl md:text-3xl font-bold mt-2">
+              {formatCurrency(card.value)}
+            </p>
           </div>
         ))}
-
       </div>
 
-      {/* 📊 CHARTS */}
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <LineChart transactions={filteredTransactions} />
-        <PieChart transactions={filteredTransactions} />
+      {/* 📊 Charts */}
+      <div className="grid md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg">
+          <h2 className="font-semibold mb-2 text-indigo-300">Transaction Trend</h2>
+          <LineChart transactions={filteredTransactions} />
+        </div>
+        <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg">
+          <h2 className="font-semibold mb-2 text-indigo-300">Expense Distribution</h2>
+          <PieChart transactions={filteredTransactions} />
+        </div>
       </div>
 
-      {/* 🔥 INSIGHTS */}
-      <div className="bg-white/10 p-4 rounded-xl mb-6">
-        <h2 className="font-semibold mb-2">Insights</h2>
-        <p>Top Spending Category: {topCategory}</p>
-        <p>Total Transactions: {filteredTransactions.length}</p>
+      {/* 🔥 Insights */}
+      <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow-lg mb-6 grid md:grid-cols-3 gap-4">
+        <div className="p-4 bg-indigo-700/30 rounded-xl">
+          <p className="text-gray-300 text-sm">Top Spending Category</p>
+          <p className="text-lg font-bold">{topCategory}</p>
+        </div>
+        <div className="p-4 bg-green-700/30 rounded-xl">
+          <p className="text-gray-300 text-sm">Total Transactions</p>
+          <p className="text-lg font-bold">{filteredTransactions.length}</p>
+        </div>
+        <div className="p-4 bg-pink-700/30 rounded-xl">
+          <p className="text-gray-300 text-sm">Net Balance</p>
+          <p className="text-lg font-bold">{formatCurrency(balance)}</p>
+        </div>
       </div>
 
-      {/* ➕ ADMIN */}
+      {/* ➕ Admin Buttons */}
       {role === "Admin" && (
-        <div className="mb-6 flex gap-4">
+        <div className="mb-6 flex flex-wrap gap-4">
           <button
             onClick={() => {
               setType("Income");
               setShowModal(true);
             }}
-            className="bg-green-500 px-5 py-2 rounded-lg hover:scale-105 transition"
+            className="bg-green-500 px-6 py-3 rounded-xl hover:scale-105 transition transform shadow-lg"
           >
             + Income
           </button>
-
           <button
             onClick={() => {
               setType("Expense");
               setShowModal(true);
             }}
-            className="bg-red-500 px-5 py-2 rounded-lg hover:scale-105 transition"
+            className="bg-red-500 px-6 py-3 rounded-xl hover:scale-105 transition transform shadow-lg"
           >
             + Expense
           </button>
         </div>
       )}
 
-      {/* 📋 TABLE */}
-      <div className="bg-white/10 rounded-xl overflow-auto">
-        <table className="w-full text-center">
+      {/* 📋 Table */}
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl overflow-auto shadow-lg mb-6">
+        <table className="w-full text-center border-separate border-spacing-y-2">
           <thead className="bg-white/20">
             <tr>
               <th className="p-3">Date</th>
@@ -251,7 +263,6 @@ function Dashboard() {
               <th className="p-3">Amount</th>
             </tr>
           </thead>
-
           <tbody>
             {filteredTransactions.length === 0 ? (
               <tr>
@@ -261,12 +272,17 @@ function Dashboard() {
               </tr>
             ) : (
               filteredTransactions.map((t) => (
-                <tr key={t.id} className="border-t border-white/10 hover:bg-white/10">
+                <tr
+                  key={t.id}
+                  className="hover:bg-white/10 transition rounded-lg"
+                >
                   <td className="p-3">{t.date}</td>
                   <td className="p-3">{t.category}</td>
-                  <td className={`p-3 font-semibold ${
-                    t.type === "Income" ? "text-green-400" : "text-red-400"
-                  }`}>
+                  <td
+                    className={`p-3 font-semibold ${
+                      t.type === "Income" ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
                     {t.type}
                   </td>
                   <td className="p-3">{t.amount}</td>
@@ -277,62 +293,56 @@ function Dashboard() {
         </table>
       </div>
 
-      {/* 🔥 MODAL */}
+      {/* 🔥 Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center">
-          <div className="bg-[#0f172a] p-6 rounded-xl w-80">
-
-            <h2 className="mb-4 text-center font-bold">
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+          <div className="bg-gray-900/90 backdrop-blur-md p-6 rounded-2xl w-80 shadow-2xl">
+            <h2 className="mb-4 text-center text-xl font-bold text-indigo-400">
               Add {type}
             </h2>
 
             <input
               placeholder="Amount"
-              className="p-2 w-full mb-3 rounded bg-white/20"
+              className="p-3 w-full mb-3 rounded-xl bg-white/10 placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 transition"
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
               }
             />
-
             <input
               placeholder="Category"
-              className="p-2 w-full mb-3 rounded bg-white/20"
+              className="p-3 w-full mb-3 rounded-xl bg-white/10 placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 transition"
               value={formData.category}
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
               }
             />
-
             <input
               type="date"
-              className="p-2 w-full mb-4 rounded bg-white/20"
+              className="p-3 w-full mb-4 rounded-xl bg-white/10 placeholder-gray-400 outline-none focus:ring-2 focus:ring-indigo-500 transition"
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
               }
             />
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-4">
               <button
                 onClick={handleAdd}
-                className="bg-indigo-500 px-4 py-2 rounded"
+                className="flex-1 bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-xl transition shadow-lg"
               >
                 Add
               </button>
-
               <button
                 onClick={() => setShowModal(false)}
-                className="bg-gray-500 px-4 py-2 rounded"
+                className="flex-1 bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded-xl transition shadow-lg"
               >
                 Cancel
               </button>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 }
